@@ -1,0 +1,68 @@
+{
+	"swagger": "2.0",
+	"info": {
+		"version": "1.0.0",
+		"title": "API de consulta de ceps",
+		"description": "API de consulta de endereços através do número do cep"
+	},
+	"basePath": "/",
+	"tags": [{
+		"name": "CEP",
+		"description": "Consulta de enderços por cep"
+	}],
+	"schemes": [
+		"http"
+	],
+	"consumes": [
+		"application/json"
+	],
+	"produces": [
+		"application/json"
+	],
+	"paths": {
+		"/cep/{cep}": {
+			"get": {
+				"tags": [
+					"Tag1"
+				],
+				"description": "Realiza a consulta de endereço pelo cep",
+				"produces": [
+					"application/json"
+				],
+				"parameters": [{
+					"name": "cep",
+					"in": "path",
+					"description": "Numero do cep a ser pesquisado sem '-'",
+					"required": true
+				}],
+				"responses": {
+					"200": {
+						"description": "Response",
+						"properties": {
+							"rua": {
+								"required": false,
+								"type": "string"
+							},
+							"bairro": {
+								"required": false,
+								"type": "string"
+							},
+							"cidade": {
+								"required": true,
+								"type": "string"
+							},
+							"estado": {
+								"required": true,
+								"type": "string"
+							},
+							"uf": {
+								"required": true,
+								"type": "string"
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
