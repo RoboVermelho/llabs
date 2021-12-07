@@ -1,4 +1,4 @@
 const server = require("./server.js")
 server.listen(8000,() => {
-  "Servidor iniciado"
+  "Servidor iniciado em 8000"
 });

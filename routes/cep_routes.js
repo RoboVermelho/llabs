@@ -5,9 +5,10 @@ module.exports = function(app, db) {
     const cep = req.params.cep;
 
     //Valida o formato do cep.
-    var vld = /^\d{5}\d{3}$/;
+    var vld = /^\d{8}$/;
     if (!vld.test(cep)) {
-      res.send({ error : "Formato de cep inválido" });
+      res.statusCode = 400;
+      res.send({ msg : "Formato de cep inválido" });
     } else {
       //Registro as opções possiveis de cep, iniciando com o valor
       //pesquisado e adicionando outras opções com o preenchimento de '0'.
@@ -17,27 +18,18 @@ module.exports = function(app, db) {
       }
       db.collection('cep').find({
         $query : { cep : { $in:  opcs }},
-        $orderby : { cep : -1 }
+        $orderby : { cep : -1 },
+        $limit : 1
       }).toArray(
           (err, item) => {
-      console.log(item);
-        if (!item)
-          res.send({ error : "CEP não encontrado" });
-        else
+        if (item.length == 0) {
+          res.statusCode = 404;
+          res.send({ msg : "CEP não encontrado" });
+        } else {
           res.send(item[0]);
+        }
       });
     }
-  });
-
-  app.post('/cep', (req, res) => {
-    const cep = { rua : req.body.rua, cep : req.body.cep };
-    db.collection('cep').insert(cep, (err, result) => {
-      if (err)
-        res.send({ error : 'Um erro aconteceu: ' + err });
-      else {
-        res.send(result.ops[0]);
-      }
-    });
   });
 
 };

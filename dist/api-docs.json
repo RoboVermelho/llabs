@@ -8,7 +8,7 @@
 	"basePath": "/",
 	"tags": [{
 		"name": "CEP",
-		"description": "Consulta de enderços por cep"
+		"description": "Consulta de endereços por cep"
 	}],
 	"schemes": [
 		"http"
@@ -25,7 +25,7 @@
 				"tags": [
 					"Tag1"
 				],
-				"description": "Realiza a consulta de endereço pelo cep",
+				"description": "Realiza a consulta de endereço pelo número do cep",
 				"produces": [
 					"application/json"
 				],
@@ -37,7 +37,7 @@
 				}],
 				"responses": {
 					"200": {
-						"description": "Response",
+						"description": "OK",
 						"properties": {
 							"rua": {
 								"required": false,
@@ -60,7 +60,13 @@
 								"type": "string"
 							}
 						}
-					}
+					},
+          404 : {
+            description: "Cep indicado nao encontrado"
+          },
+          400 : {
+            description: "Formato do cep inválido"
+          }
 				}
 			}
 		}

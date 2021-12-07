@@ -26,28 +26,9 @@ swagger.setApiInfo({
 app.get("/", function(req, res) {
   res.sendFile(__dirname + '/dist/index.html');
 });
-
-
 swagger.configureSwaggerPaths('', 'api-docs', '');
 
-//configurando dominio da API.
-var domain = 'localhost'
-if (argv.domain !== undefined)
-  domain = arv.domain;
-else
-  console.log('No --domain=xxx, especified, selecionando default, localhost');
-
-//config de porta
-var port = 8080;
-if (argv.port !== undefined)
-  port = argv.port;
-else
-  console.log('Sem arg --port=xxx, selecionando porta padrão 8080');
-
-var applicationUrl = 'http://' + domain + ':' + port;
-swagger.configure(applicationUrl, '1.0.0');
-
-
+//Iniciando com conexão ao MongoDB.
 MongoClient.connect(db.url, (err, dbase) => {
   if (err)
     return console.log(err);

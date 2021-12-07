@@ -1,23 +1,31 @@
-var request = require("supertest");
-const app = require("./server.js");
+const request = require("supertest");
+const app = require("../server.js");
 const {MongoClient} = require('mongodb');
-const dbCfg = require('./config/db.js');
+const dbCfg = require('../config/db.js');
 
 let connection;
 let db;
+
 let objTeste1 = { "cep" : "38411145",
     rua : "Avenida Paulo Gracindo",
     bairro : "Gávea",
     cidade : "Uberlandia",
     uf : "MG"
-  };
+};
 
-let objTeste2 = { cep : "38411100",
+let objTeste2 = { cep : "38410000",
     rua : "rua Teste",
     bairro : "bairro Teste",
     cidade : "Cidade teste",
     uf : "MG"
-}
+};
+
+let objTeste3 = { "cep" : "38411140",
+    rua : "Avenida Paulo Gracindo",
+    bairro : "Gávea",
+    cidade : "Uberlandia",
+    uf : "MG"
+};
 
 
 beforeAll(async() => {
@@ -26,6 +34,7 @@ beforeAll(async() => {
   });
   db = await connection.db("cep-api");
   db.collection('cep').drop();
+  db.collection('cep').insert(objTeste3);
   db.collection('cep').insert(objTeste2);
   db.collection('cep').insert(objTeste1);
 });
@@ -47,7 +56,6 @@ describe("Testando a consulta", () => {
   it("Deve retornar um cep completo (cep exato)", async () => {
     const res = await request(app).get('/cep/38411145');
     expect(res.statusCode).toEqual(200);
-    console.log(res.body);
     expect(res.body.cep).toEqual(objTeste1.cep);
     expect(res.body.rua).toEqual(objTeste1.rua);
     expect(res.body.bairro).toEqual(objTeste1.bairro);
@@ -56,14 +64,25 @@ describe("Testando a consulta", () => {
 });
 
   it("Deve retornar um cep completo (cep com complemento de 0s)", async () => {
-    const res = await request(app).get('/cep/35411145');
+    const res = await request(app).get('/cep/38412345');
     expect(res.statusCode).toEqual(200);
-    console.log(res.body);
     expect(res.body.cep).toEqual(objTeste2.cep);
     expect(res.body.rua).toEqual(objTeste2.rua);
     expect(res.body.bairro).toEqual(objTeste2.bairro);
     expect(res.body.cidade).toEqual(objTeste2.cidade);
     expect(res.body.uf).toEqual(objTeste2.uf);
+  });
+
+  it("Cep não encontrado", async () => {
+    const res = await request(app).get('/cep/39412345');
+    expect(res.statusCode).toEqual(404);
+    expect(res.body.msg).toEqual("CEP não encontrado");
+  });
+
+  it("Formato de CEP inválido", async () => {
+    const res = await request(app).get('/cep/aaa--445');
+    expect(res.statusCode).toEqual(400);
+    expect(res.body.msg).toEqual("Formato de cep inválido");
   });
 
 });
