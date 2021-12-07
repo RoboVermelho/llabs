@@ -15,19 +15,21 @@ module.exports = function(app, db) {
       for (var i = 7; i > 2; i--) {
         opcs.push(cep.substring(0,i) + "0".repeat(8-i));
       }
-      console.log(opcs);
-      db.collection('cep').findOne({ cep : { $in:  opcs }},
+      db.collection('cep').find({
+        $query : { cep : { $in:  opcs }},
+        $orderby : { cep : -1 }
+      }).toArray(
           (err, item) => {
-      if (err)
-          res.send({ erro : "Erro encontrado" });
-      else
-        res.send(item);
+      console.log(item);
+        if (!item)
+          res.send({ error : "CEP não encontrado" });
+        else
+          res.send(item[0]);
       });
     }
   });
 
   app.post('/cep', (req, res) => {
-    console.log(req.body);
     const cep = { rua : req.body.rua, cep : req.body.cep };
     db.collection('cep').insert(cep, (err, result) => {
       if (err)
